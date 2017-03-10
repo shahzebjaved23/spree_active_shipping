@@ -11,11 +11,12 @@ module Spree
         def compute_package(package)
           order = package.order
           stock_location = package.stock_location
+          max_weight = get_max_weight(package)
 
           origin = build_location(stock_location)
           destination = build_location(order.ship_address)
 
-          rates_result = retrieve_rates_from_cache(package, origin, destination)
+          rates_result = retrieve_rates_from_cache(package, origin, destination,max_weight)
 
           return nil if rates_result.kind_of?(Spree::ShippingError)
           return nil if rates_result.empty?
@@ -38,6 +39,23 @@ module Spree
         end
 
         private
+
+        def get_max_weight(package)
+          order = package.order
+
+          # Default value from calculator
+          max_weight = max_weight_for_country(order.ship_address.country)
+
+          # If max_weight is zero or max_weight_per_package is less than max_weight
+          # We use the max_weight_per_package instead
+          if max_weight.zero? && max_weight_per_package.nonzero?
+            return max_weight_per_package
+          elsif max_weight > 0 && max_weight_per_package < max_weight && max_weight_per_package > 0
+            return max_weight_per_package
+          end
+
+          max_weight
+        end
 
         def retrieve_rates(origin, destination, shipment_packages)
           begin
