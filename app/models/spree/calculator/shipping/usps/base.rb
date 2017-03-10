@@ -46,13 +46,13 @@ module Spree
           # Default value from calculator
           max_weight = max_weight_for_country(order.ship_address.country)
 
-          # If max_weight is zero or max_weight_per_package is less than max_weight
-          # We use the max_weight_per_package instead
-          if max_weight.zero? && max_weight_per_package.nonzero?
-            return max_weight_per_package
-          elsif max_weight > 0 && max_weight_per_package < max_weight && max_weight_per_package > 0
-            return max_weight_per_package
-          end
+          # # If max_weight is zero or max_weight_per_package is less than max_weight
+          # # We use the max_weight_per_package instead
+          # if max_weight.zero? && max_weight_per_package.nonzero?
+          #   return max_weight_per_package
+          # elsif max_weight > 0 && max_weight_per_package < max_weight && max_weight_per_package > 0
+          #   return max_weight_per_package
+          # end
 
           max_weight
         end
